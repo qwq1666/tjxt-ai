@@ -1,0 +1,36 @@
+server:
+  port: 8087  #端口
+  tomcat:
+    uri-encoding: UTF-8   #服务编码
+  error:
+    include-message: always #返回的响应体带上message
+spring:
+  profiles:
+    active: local
+  application:
+    name: pay-service
+tj:
+  swagger:
+    enable: true
+    enableResponseWrap: true
+    package-path: com.tianji.pay.controller
+    title: 天机学堂 - 支付中心接口文档
+    description: 该服务提供微信、支付宝等各种平台的支付、退款等功能
+    contact-name: 传智教育·研究院
+    contact-url: http://www.itcast.cn/
+    contact-email: zhanghuyi@itcast.cn
+    version: v1.0
+  jdbc:
+    database: tj_pay
+  pay:
+    notifyHost: https://6b9f16dd.r2.cpolar.top/ps
+    ali:
+      appId: ${tj.pay.ali.appId:}
+      merchantPrivateKey: ${tj.pay.ali.merchantPrivateKey:}
+      publicKey: ${tj.pay.ali.publicKey:}
+    wx:
+      appId: ${tj.pay.wx.appId:}
+      mchId: ${tj.pay.wx.mchId:}
+      mchSerialNo: ${tj.pay.wx.mchSerialNo:}
+      privateKey: ${tj.pay.wx.privateKey:}
+      apiV3Key: ${tj.pay.wx.apiV3Key:}
