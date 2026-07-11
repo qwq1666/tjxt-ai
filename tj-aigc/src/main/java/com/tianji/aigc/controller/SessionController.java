@@ -1,6 +1,7 @@
 package com.tianji.aigc.controller;
 
 import com.tianji.aigc.service.ChatSessionService;
+import com.tianji.aigc.vo.MessageVO;
 import com.tianji.aigc.vo.SessionVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,4 +26,11 @@ public class SessionController {
     @GetMapping("/hot")
     public List<SessionVO.Example> hotExamples(@RequestParam("n") Integer n){
         return chatSessionService.hotExamples(n);
-    }}
+    }
+
+    @GetMapping("/{sessionId}")
+    public List<MessageVO> queryBySessionId(@PathVariable("sessionId") String sessionId) {
+        return this.chatSessionService.queryBySessionId(sessionId);
+    }
+
+}
