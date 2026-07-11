@@ -24,4 +24,9 @@ public class ChatController {
     public Flux<ChatEventVO> chat(@RequestBody ChatDTO chatDTO){
         return this.chatService.chat(chatDTO.getQuestion(),chatDTO.getSessionId());
     }
+
+    @PostMapping("/stop")
+    public void stop(@RequestParam("sessionId") String sessionId){
+        this.chatService.stop(sessionId);
+    }
 }

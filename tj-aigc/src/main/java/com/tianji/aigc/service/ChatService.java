@@ -7,4 +7,5 @@ public interface ChatService {
 
     Flux<ChatEventVO> chat(String question,String sessionId);
 
+    void stop(String sessionId);
 }

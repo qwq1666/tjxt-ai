@@ -12,13 +12,16 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
     private final ChatClient chatClient;
     private final SystemPromptConfig systemPromptConfig;
-
+    private static final Map<String ,Boolean> GENERATE_STATUS = new ConcurrentHashMap<>();
     @Override
     public Flux<ChatEventVO> chat(String question, String sessionId) {
         return this.chatClient.prompt()
@@ -28,6 +31,12 @@ public class ChatServiceImpl implements ChatService {
                 .user(question)
                 .stream()
                 .chatResponse()
+                .doFirst(()->GENERATE_STATUS.put(sessionId,true))
+                .doOnError(throwable -> GENERATE_STATUS.remove(sessionId))
+                .doOnComplete(()-> GENERATE_STATUS.remove(sessionId))
+                .takeWhile(response -> {
+                    return GENERATE_STATUS.getOrDefault(sessionId,false);
+                })
                 .map(chatResponse -> {
                     String text = chatResponse.getResult().getOutput().getText();
                     return ChatEventVO.builder()
@@ -38,5 +47,10 @@ public class ChatServiceImpl implements ChatService {
                 .concatWith(Flux.just(ChatEventVO.builder() //标记输出结束
                         .eventType(ChatEventTypeEnum.STOP.getValue())
                         .build()));
+    }
+
+    @Override
+    public void stop(String sessionId) {
+        GENERATE_STATUS.remove(sessionId);
     }
 }
